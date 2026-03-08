@@ -1,0 +1,42 @@
+CREATE TABLE apod_cache (
+    date TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    explanation TEXT NOT NULL,
+    media_type TEXT NOT NULL,
+    url TEXT NOT NULL,
+    hd_url TEXT,
+    copyright TEXT
+);
+
+getApodByDate:
+SELECT * FROM apod_cache WHERE date = :date;
+
+insertApod:
+INSERT OR REPLACE INTO apod_cache(date, title, explanation, media_type, url, hd_url, copyright)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+CREATE TABLE epic_image_cache (
+    identifier TEXT NOT NULL PRIMARY KEY,
+    date TEXT NOT NULL,
+    image_name TEXT NOT NULL,
+    caption TEXT NOT NULL,
+    thumbnail_url TEXT NOT NULL,
+    full_url TEXT NOT NULL
+);
+
+getEpicImagesByDate:
+SELECT * FROM epic_image_cache WHERE date = :date;
+
+insertEpicImage:
+INSERT OR REPLACE INTO epic_image_cache(identifier, date, image_name, caption, thumbnail_url, full_url)
+VALUES (?, ?, ?, ?, ?, ?);
+
+CREATE TABLE epic_available_dates_cache (
+    date TEXT NOT NULL PRIMARY KEY
+);
+
+getAllAvailableDates:
+SELECT date FROM epic_available_dates_cache ORDER BY date DESC;
+
+insertAvailableDate:
+INSERT OR REPLACE INTO epic_available_dates_cache(date) VALUES (?);

@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS mars_photo_cache;
+
+CREATE TABLE epic_image_cache (
+    identifier TEXT NOT NULL PRIMARY KEY,
+    date TEXT NOT NULL,
+    image_name TEXT NOT NULL,
+    caption TEXT NOT NULL,
+    thumbnail_url TEXT NOT NULL,
+    full_url TEXT NOT NULL
+);
+
+CREATE TABLE epic_available_dates_cache (
+    date TEXT NOT NULL PRIMARY KEY
+);
