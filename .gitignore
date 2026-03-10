@@ -1,6 +1,26 @@
 # AI tooling
 CLAUDE.md
 
+# Kotlin/Native build artifacts
+*.klib
+*.klib.def
+composeApp/build/
+.kotlin/
+
+# Xcode build artifacts
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
 # Created by https://www.toptal.com/developers/gitignore/api/android,kotlin,gradle,macos,androidstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=android,kotlin,gradle,macos,androidstudio
 

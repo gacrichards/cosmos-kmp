@@ -22,6 +22,8 @@ private val testApod = Apod(
 
 private class FakeApodRepository(private val result: Result<Apod>) : ApodRepository {
     override fun getTodayApod(): Flow<Result<Apod>> = flowOf(result)
+    override fun getApodByDate(date: String): Flow<Result<Apod>> = flowOf(result)
+    override fun getApodArchive(startDate: String, endDate: String): Flow<Result<List<Apod>>> = flowOf(Result.success(emptyList()))
 }
 
 class GetTodayApodUseCaseTest {

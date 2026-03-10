@@ -1,6 +1,7 @@
 package com.gacrichards.cosmos.ui.today
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,15 +37,12 @@ import com.gacrichards.cosmos.presentation.today.TodayViewModel
 fun TodayScreen(
     viewModel: TodayViewModel,
     contentPadding: PaddingValues = PaddingValues(),
+    onImageClick: (String) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
-        is UiState.Loading -> LoadingContent(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding),
-        )
+        is UiState.Loading -> TodayScreenSkeleton(contentPadding = contentPadding)
         is UiState.Error -> ErrorContent(
             message = state.message,
             onRetry = { viewModel.onEvent(TodayEvent.Retry) },
@@ -55,13 +52,18 @@ fun TodayScreen(
         )
         is UiState.Success -> TodayContent(
             apod = state.data,
+            onImageClick = { onImageClick(state.data.date) },
             modifier = Modifier.padding(contentPadding),
         )
     }
 }
 
 @Composable
-private fun TodayContent(apod: Apod, modifier: Modifier = Modifier) {
+private fun TodayContent(
+    apod: Apod,
+    onImageClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -78,7 +80,8 @@ private fun TodayContent(apod: Apod, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = 240.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable(onClick = onImageClick),
             )
             is MediaType.Video -> VideoPlaceholder(url = media.url)
         }
@@ -132,16 +135,6 @@ private fun VideoPlaceholder(url: String) {
 }
 
 @Composable
-private fun LoadingContent(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
 private fun ErrorContent(
     message: String,
     onRetry: () -> Unit,
@@ -172,7 +165,7 @@ private fun ErrorContent(
 @Composable
 private fun TodayScreenLoadingPreview() {
     MaterialTheme {
-        LoadingContent(modifier = Modifier.fillMaxSize())
+        TodayScreenSkeleton()
     }
 }
 

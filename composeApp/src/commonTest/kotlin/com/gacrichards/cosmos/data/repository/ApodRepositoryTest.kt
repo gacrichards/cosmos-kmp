@@ -45,6 +45,9 @@ private class TestableApodRepository(
     private val today: String,
 ) : ApodRepository {
 
+    override fun getApodByDate(date: String): Flow<Result<Apod>> = kotlinx.coroutines.flow.flowOf(Result.failure(NotImplementedError()))
+    override fun getApodArchive(startDate: String, endDate: String): Flow<Result<List<Apod>>> = kotlinx.coroutines.flow.flowOf(Result.success(emptyList()))
+
     override fun getTodayApod(): Flow<Result<Apod>> = kotlinx.coroutines.flow.flow {
         fakeCache.getByDate(today)?.let { emit(Result.success(it)) }
         try {

@@ -13,23 +13,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.gacrichards.cosmos.presentation.epic.EpicViewModel
-import com.gacrichards.cosmos.presentation.today.TodayViewModel
+import androidx.navigation.navArgument
+import com.gacrichards.cosmos.ui.archive.ArchiveScreen
+import com.gacrichards.cosmos.ui.detail.MediaDetailScreen
 import com.gacrichards.cosmos.ui.epic.EpicScreen
 import com.gacrichards.cosmos.ui.today.TodayScreen
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 private const val ROUTE_TODAY = "today"
+private const val ROUTE_ARCHIVE = "archive"
 private const val ROUTE_EARTH = "earth"
+private const val ROUTE_MEDIA_DETAIL = "media_detail/{date}"
+private val BOTTOM_NAV_ROUTES = setOf(ROUTE_TODAY, ROUTE_ARCHIVE, ROUTE_EARTH)
 
 @Composable
-fun CosmosApp(
-    todayViewModel: TodayViewModel,
-    epicViewModel: EpicViewModel,
-) {
+fun CosmosApp() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -43,6 +47,20 @@ fun CosmosApp(
                     selected = currentRoute == ROUTE_TODAY,
                     onClick = {
                         navController.navigate(ROUTE_TODAY) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                )
+                NavigationBarItem(
+                    icon = { NavIcon("⊞") },
+                    label = { Text("Archive") },
+                    selected = currentRoute == ROUTE_ARCHIVE,
+                    onClick = {
+                        navController.navigate(ROUTE_ARCHIVE) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
@@ -74,13 +92,31 @@ fun CosmosApp(
         ) {
             composable(ROUTE_TODAY) {
                 TodayScreen(
-                    viewModel = todayViewModel,
+                    viewModel = koinViewModel(),
                     contentPadding = innerPadding,
+                    onImageClick = { date -> navController.navigate("media_detail/$date") },
+                )
+            }
+            composable(ROUTE_ARCHIVE) {
+                ArchiveScreen(
+                    viewModel = koinViewModel(),
+                    onApodClick = { date -> navController.navigate("media_detail/$date") },
+                    modifier = Modifier.padding(innerPadding),
                 )
             }
             composable(ROUTE_EARTH) {
                 EpicScreen(
-                    viewModel = epicViewModel,
+                    viewModel = koinViewModel(),
+                    modifier = Modifier.padding(innerPadding),
+                )
+            }
+            composable(
+                route = ROUTE_MEDIA_DETAIL,
+                arguments = listOf(navArgument("date") { type = NavType.StringType }),
+            ) { backStack ->
+                val date = backStack.arguments?.getString("date") ?: return@composable
+                MediaDetailScreen(
+                    viewModel = koinViewModel(parameters = { parametersOf(date) }),
                     modifier = Modifier.padding(innerPadding),
                 )
             }

@@ -14,4 +14,17 @@ class ApodApiService(
         client.get("$NASA_BASE_URL$NASA_APOD_PATH") {
             parameter(NASA_PARAM_API_KEY, apiKey)
         }.body()
+
+    suspend fun getApodByDate(date: String): ApodDto =
+        client.get("$NASA_BASE_URL$NASA_APOD_PATH") {
+            parameter(NASA_PARAM_API_KEY, apiKey)
+            parameter("date", date)
+        }.body()
+
+    suspend fun getApodArchive(startDate: String, endDate: String): List<ApodDto> =
+        client.get("$NASA_BASE_URL$NASA_APOD_PATH") {
+            parameter(NASA_PARAM_API_KEY, apiKey)
+            parameter("start_date", startDate)
+            parameter("end_date", endDate)
+        }.body()
 }
